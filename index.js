@@ -1,36 +1,19 @@
-const express = require('express')
-const app = express()
-const port = 3000
+import { server, port, json } from "./config/server.js";
+import { notFound, error } from "./middlewares/index.js";
+import { router } from './routes.js';
 
-const isAuthenticated = (publicId) => {
-  return Object.keys(stickersByUsers).includes(publicId);
-}
+// Middleware to parse JSON bodies
+server.use(json());
 
-const stickersByUsers = {
-  "58f9eb7a-705c-4d02-aecc-df8681c3888d": [],
-}
+// Routes
+server.use(router);
 
-app.get('/login', (req, res) => {
-  res.json({ publicId: '58f9eb7a-705c-4d02-aecc-df8681c3888d' })
-})
+// Not Found Middleware (optional, can be used to handle 404 errors)
+server.use(notFound);
+// Error handling middleware (must be the last middleware)
+server.use(error);
 
-app.get('/stickers', (req, res) => {
-  if (isAuthenticated(req.query.publicId)) {
-    res.json([])
-  } else {
-    res.json({ error: 'error '})
-  }
-})
-
-app.post('/stickers', (req, res) => {
-  if (isAuthenticated(req.query.publicId)) {
-    // devolver 5 pacotinhos
-    res.json([])
-  } else {
-    res.json({ error: 'error '})
-  }
-})
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+server.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+  console.log("Pressione Ctrl+C para desligar o servidor.");
+});
